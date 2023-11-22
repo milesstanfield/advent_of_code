@@ -1,25 +1,28 @@
 pub fn run(input: &String) {
-    let mut max = 0;
-    let mut min = 0;
     let mut sum = 0;
-    let mut _num = 0;
+    let mut _line_nums: Vec<usize> = vec![];
 
     for line in input.lines() {
-        for (i, str_num) in line.split(" ").into_iter().enumerate() {
-            _num = str_num.parse().expect("NaN");
+        _line_nums = line_numbers(&line);
 
-            if i == 0 {
-                (min, max) = (_num, _num);
-            }
-
-            if _num > max {
-                max = _num;
-            } else if _num < min {
-                min = _num;
+        for (i, num1) in _line_nums.iter().enumerate() {
+            for (ii, num2) in _line_nums.iter().enumerate() {
+                if i != ii && num1 >= num2 && (num1 % num2 == 0) {
+                    sum += num1 / num2;
+                }
             }
         }
-        sum += max - min;
     }
 
     println!("{}", sum);
+}
+
+fn line_numbers(line: &str) -> Vec<usize> {
+    let mut numbers: Vec<usize> = vec![];
+
+    for str_num in line.split(" ").into_iter() {
+        numbers.push(str_num.parse().expect("NaN"));
+    }
+
+    numbers
 }
