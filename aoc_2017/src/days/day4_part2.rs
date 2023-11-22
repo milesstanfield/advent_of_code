@@ -12,12 +12,18 @@ pub fn run(input: &String) {
 
 fn is_valid_passphrase(line: &str) -> bool {
     let mut words: Vec<String> = vec![];
+    let mut chars: Vec<char>;
+    let mut sorted_word: String;
 
     for word in line.split(" ").into_iter() {
-        if words.contains(&word.to_string()) {
+        chars = word.chars().collect();
+        chars.sort_by(|a, b| a.cmp(b));
+        sorted_word = chars.into_iter().collect();
+
+        if words.contains(&sorted_word) {
             return false;
         } else {
-            words.push(word.to_string());
+            words.push(sorted_word);
         }
     }
 
