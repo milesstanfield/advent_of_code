@@ -1,13 +1,10 @@
-use days::day1_part2::run;
-use std::{collections::VecDeque, env};
+use days::day2_part1::run;
+use shell::{dir::manifest_dir, file::cat_file};
 
 pub mod days;
+pub mod shell;
 
 fn main() {
-    let args: VecDeque<String> = env::args().skip(1).collect();
-
-    match args.get(0) {
-        Some(arg1) => run(arg1),
-        None => panic!(r#"missing arg. usage: cargo run "<some-arg>""#),
-    }
+    let input = cat_file(&(manifest_dir() + "/src/tmp/input.txt"));
+    run(&input);
 }
