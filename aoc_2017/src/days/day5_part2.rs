@@ -12,7 +12,12 @@ pub fn run(input: &String) {
     while pos_range.contains(&pos) {
         _offset = offsets[pos as usize];
         _abs_offset = _offset.abs();
-        offsets[pos as usize] += 1; // jump
+
+        if _offset >= 3 {
+            offsets[pos as usize] -= 1; // jump back
+        } else {
+            offsets[pos as usize] += 1; // jump forward
+        }
 
         if _offset.is_positive() {
             pos += _abs_offset;
