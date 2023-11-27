@@ -1,30 +1,43 @@
 use regex::Regex;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct Program {
     name: String,
-    weight: String,
+    weight: usize,
     oppressors: String,
     oppressing_weight: usize,
+    total_weight: usize,
 }
+
 type Programs = Vec<Program>;
 
 pub fn run(input: &String) {
     let programs = programs(input);
-    let programs = oppressing_weight_programs(programs);
 
-    // let program_weight: usize = program.weight.parse().unwrap();
-    // println!("{:?}", sum + program_weight)
-}
+    // let bottom_program_name = "tknk";
+    // let oppressing_stats = oppressing_stats(&programs, bottom_program_name);
 
-fn index_by_name(programs: &Programs, name: &str) -> usize {
-    for (i, program) in programs.iter().enumerate() {
-        if program.name == name {
-            return i;
+    for program in programs {
+        if !program.oppressors.is_empty() {
+            println!("{:?}", program)
         }
     }
-    panic!("not found")
 }
+
+// fn oppressing_stats(programs: &Programs, bottom_program_name: &str) -> Vec<(usize, usize)> {
+//     let mut weight: usize;
+//     let mut data: (usize, usize);
+//     let mut datas: Vec<(usize, usize)> = vec![];
+
+//     for (i, program) in programs.iter().enumerate() {
+//         if !program.oppressors.is_empty() && program.name != bottom_program_name {
+//             weight = program.weight.parse().expect("weightless");
+//             data = (i, program.oppressing_weight + weight);
+//             datas.push(data);
+//         }
+//     }
+//     datas
+// }
 
 fn programs(input: &String) -> Programs {
     let mut parts: Vec<&str>;
@@ -36,27 +49,37 @@ fn programs(input: &String) -> Programs {
         basics = parts.first().expect("unsplittable").split(" ").collect();
         programs.push(program(&basics, &parts));
     }
+
+    for i in 0..programs.len() {
+        if !programs[i].oppressors.is_empty() {
+            programs[i].oppressing_weight = oppressing_weight(&programs[i].oppressors, &programs);
+        }
+    }
+
+    for i in 0..programs.len() {
+        programs[i].total_weight = programs[i].weight + programs[i].oppressing_weight;
+    }
+
     programs
 }
 
-fn oppressing_weight_programs(programs: Programs) -> Programs {
-    let mut mprograms = programs.clone();
-
-    for i in 0..mprograms.len() {
-        mprograms[i].oppressing_weight = oppressing_weight(&mprograms[i].oppressors, &programs);
+fn index_by_name(programs: &Programs, name: &str) -> usize {
+    for (i, program) in programs.iter().enumerate() {
+        if program.name == name {
+            return i;
+        }
     }
-
-    mprograms
+    panic!("{:?} not found in {:?}", name, programs);
 }
 
 fn oppressing_weight(oppressors: &str, programs: &Programs) -> usize {
     let mut oppressing_weight = 0;
-    let mut weight: usize = 0;
-    let mut oppressor_index: usize = 0;
+    let mut weight: usize;
+    let mut oppressor_index: usize;
 
     for oppressor_name in oppressors.split(" ") {
         oppressor_index = index_by_name(&programs, &oppressor_name);
-        weight = programs[oppressor_index].weight.parse().unwrap();
+        weight = programs[oppressor_index].weight;
         oppressing_weight += weight;
     }
     oppressing_weight
@@ -68,6 +91,7 @@ fn program(basics: &Vec<&str>, parts: &Vec<&str>) -> Program {
         weight: weight(&basics),
         oppressors: oppressors(&parts),
         oppressing_weight: 0,
+        total_weight: 0,
     }
 }
 
@@ -81,7 +105,7 @@ fn oppressors(parts: &Vec<&str>) -> String {
     }
 }
 
-fn weight(basics: &Vec<&str>) -> String {
+fn weight(basics: &Vec<&str>) -> usize {
     let raw_weight = basics.last().expect("lbs");
     let re = Regex::new(r"[\(\)]").expect("no regex");
     re.replace_all(raw_weight, "").parse().expect("NaN")
