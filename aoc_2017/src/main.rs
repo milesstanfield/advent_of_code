@@ -5,6 +5,8 @@ pub mod days;
 pub mod shell;
 
 fn main() {
-    let input = cat_file(&(manifest_dir() + "/src/tmp/input.txt"));
+    let input = cat_file(&(manifest_dir() + "/src/tmp/input.txt"))
+        .trim_end()
+        .into();
     run(&input);
 }
