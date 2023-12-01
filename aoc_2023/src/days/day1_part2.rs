@@ -1,6 +1,6 @@
 const MARKER: char = '%';
 
-pub fn run(input: &String) {
+pub fn run(input: &String) -> usize {
     let mut values: usize = 0;
     let mut num_chars: Vec<&str>;
     let mut first_char: &str;
@@ -19,7 +19,8 @@ pub fn run(input: &String) {
         values += value;
     }
 
-    println!("{:?}", values)
+    println!("{:?}", values);
+    values
 }
 
 fn marker_wrapped_number_chars(marker_wrapped_number_words: String) -> Vec<char> {
@@ -86,4 +87,15 @@ fn marker_wrapped_number_words(input: &String) -> String {
     }
 
     output
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::days::day1_part2::run;
+
+    #[test]
+    fn it_works() {
+        let input: String = "two1nine\neightwothree\nabcone2threexyz\nxtwone3four\n4nineeightseven2\nzoneight234\n7pqrstsixteen".into();
+        assert_eq!(run(&input), 281);
+    }
 }
