@@ -95,7 +95,14 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let input: String = "two1nine\neightwothree\nabcone2threexyz\nxtwone3four\n4nineeightseven2\nzoneight234\n7pqrstsixteen".into();
+        let input: String = r"two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen"
+            .into();
         assert_eq!(run(&input), 281);
     }
 }
