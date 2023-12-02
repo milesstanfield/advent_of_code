@@ -1,17 +1,16 @@
 pub fn run(input: &String) -> usize {
     let mut output: usize = 0;
 
-    println!("{:?}", output);
+    println!("{:?}", input);
     output
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::days::day2_part1::run;
-
     #[test]
     fn it_works() {
-        let input: String = r"two1nine
+        let input: String = "\
+two1nine
 eightwothree
 abcone2threexyz
 xtwone3four
@@ -19,6 +18,6 @@ xtwone3four
 zoneight234
 7pqrstsixteen"
             .into();
-        assert_eq!(run(&input), 0);
+        assert_eq!(crate::days::day2_part1::run(&input), 0);
     }
 }
