@@ -34,7 +34,6 @@ pub fn run(input: &String) -> usize {
         power_sum += red_set_max * green_set_max * blue_set_max;
     }
 
-    println!("{:?}", power_sum);
     power_sum
 }
 
