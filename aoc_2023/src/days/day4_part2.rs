@@ -14,7 +14,6 @@ pub fn run(input: &String) -> usize {
         total += copied_score.copies + 1;
     }
 
-    println!("{:?}", total);
     total
 }
 
