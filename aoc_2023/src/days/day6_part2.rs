@@ -1,20 +1,16 @@
 struct Race {
-    time: i32,
-    dist: i32,
+    time: usize,
+    dist: usize,
 }
 
-pub fn run(input: &String) -> usize {
-    let races = vec![
-        Race { time: 7, dist: 9 },
-        Race { time: 15, dist: 40 },
-        Race {
-            time: 30,
-            dist: 200,
-        },
-    ];
-    let mut winning_holds: Vec<i32>;
-    let mut moved: i32;
-    let mut ways_to_win: Vec<i32> = vec![];
+pub fn run(_: &String) -> usize {
+    let races = vec![Race {
+        time: 60808676,
+        dist: 601116315591300,
+    }];
+    let mut winning_holds: Vec<usize>;
+    let mut moved: usize;
+    let mut ways_to_win: Vec<usize> = vec![];
 
     for race in races {
         moved = 0;
@@ -27,16 +23,16 @@ pub fn run(input: &String) -> usize {
             }
         }
 
-        ways_to_win.push(winning_holds.len() as i32);
+        ways_to_win.push(winning_holds.len() as usize);
     }
 
-    let mut mult = 0;
+    let mut mult = 1;
     for way_to_win in ways_to_win {
         mult = mult * way_to_win;
     }
     println!("{:?}", mult);
 
-    0
+    mult
 }
 
 #[cfg(test)]
@@ -45,6 +41,6 @@ mod tests {
 
     #[test]
     fn it_works() {
-        assert_eq!(run(&input), 288);
+        assert_eq!(run(&"".to_string()), 71503);
     }
 }
