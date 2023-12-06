@@ -3,6 +3,7 @@
 // pub mod day2_part1;
 // pub mod day2_part2;
 // pub mod day3_part1;
-pub mod day3_part2;
+// pub mod day3_part2;
 // pub mod day4_part1;
 // pub mod day4_part2;
+pub mod day5_part1;
