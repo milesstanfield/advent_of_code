@@ -1,107 +1,79 @@
-use std::ops::Range;
+use std::{collections::HashMap, ops::Range};
 
 use regex::Regex;
 
-pub fn run(input: &String) -> Vec<u32> {
-    let lines: Vec<&str> = input.lines().collect();
-    let seeds = seeds(lines.first()).sort();
-    // [13, 14, 55, 79];
+type TranslationMap = HashMap<usize, usize>;
+type DataVec = Vec<usize>;
+type DataVecs = Vec<DataVec>;
 
-    // 50 98 2    => 50..51  98..99
-    // 52 50 48   => 52..(52 + 48)  50..(50 + 48)
+pub fn run(input: &String) -> usize {
+    let groups = groups(input);
+    let mut nums = line_numbers(groups[0]);
 
-    let r1: Range<usize> = 98..(98 + 1);
-    let r2: Range<usize> = 50..(50 + 47);
-
-    if r1.contains(&13) || r2.contains(&13) {
-        println!("todo")
-    } else {
-        println!("13 is same");
+    for group in groups.into_iter().skip(1) {
+        let data_vecs = data_vecs(group);
+        let translation_map = translation_map(&nums, data_vecs);
+        nums = translate(&nums, translation_map);
     }
 
-    if r1.contains(&14) || r2.contains(&14) {
-        println!("todo")
-    } else {
-        println!("14 is same");
-    }
+    nums.sort();
+    let lowest = nums.first().unwrap();
+    println!("{:?}", lowest);
 
-    if r1.contains(&55) {
-        println!("r1 has 55");
-    } else if r2.contains(&55) {
-        println!("55 is {}", 55 + (52 - 50));
-    } else {
-        println!("14 is same");
-    }
-
-    if r1.contains(&79) {
-        println!("r1 has 79");
-    } else if r2.contains(&79) {
-        println!("79 is {}", 79 + (52 - 50));
-    } else {
-        println!("79 is same");
-    }
-
-    // if .ranee {}
-    // todo parse this
-    // let foo = 9..3;
-    let soil_ranges: Vec<Range<u32>> =
-        vec![50..(50 + 1), 98..(98 + 1), 52..(52 + 47), 50..(50 + 47)];
-
-    println!("seeds {:?}", seeds);
-    let mut sum: usize = 0;
-
-    // sum
-    vec![]
+    *lowest
 }
 
-fn seeds(line1: Option<&&str>) -> Vec<u32> {
-    Regex::new(r"\D")
+fn groups(input: &String) -> Vec<&str> {
+    let re = Regex::new(r"\n\n").unwrap();
+    re.split(input).collect()
+}
+
+fn data_vecs(group: &str) -> DataVecs {
+    let re = Regex::new(r"(.*map:\n)(.*)").unwrap();
+    let replacement = re.replace_all(group, "${2}");
+    replacement.split("\n").map(|l| line_numbers(l)).collect()
+}
+
+fn translate(nums: &Vec<usize>, map: TranslationMap) -> Vec<usize> {
+    let mut translated_nums: Vec<usize> = vec![];
+    for num in nums {
+        if let Some(translation) = map.get(&num) {
+            translated_nums.push(*translation);
+        } else {
+            translated_nums.push(*num);
+        }
+    }
+    translated_nums
+}
+
+fn translation_map(nums: &Vec<usize>, data_vecs: DataVecs) -> TranslationMap {
+    let mut map: HashMap<usize, usize> = HashMap::new();
+    let mut range: Range<usize>;
+
+    for data in data_vecs {
+        range = data[1]..(data[1] + (data[2] - 1) + 1);
+
+        for num in nums.iter() {
+            if range.contains(num) {
+                let diff = data[0].abs_diff(data[1]);
+                if data[0] >= data[1] {
+                    map.insert(*num, num + diff);
+                } else {
+                    map.insert(*num, num - diff);
+                }
+            }
+        }
+    }
+    map
+}
+
+fn line_numbers(line: &str) -> Vec<usize> {
+    Regex::new(r"\d+")
         .unwrap()
-        .split(line1.unwrap())
-        .filter(|s| !s.is_empty())
-        .map(|s| s.parse().expect(&format!("{} NaN", s)))
-        .collect::<Vec<u32>>()
+        .find_iter(line)
+        .map(|s| s.as_str().parse().unwrap())
+        .collect()
 }
-
-// the maps describe entire ranges of numbers that can be converted.
-// Each line within a map contains three numbers:
-// the destination range start, the source range start, and the range length
-
-// seeds: 79 14 55 13
-
-// seed-to-soil map:
-// 50 98 2    => 50..51  98..99
-// With this information, you know that seed number 98 corresponds to soil number
-// 50 and that seed number 99 corresponds to soil number 51.
-
-// 52 50 48   => 52..(52 + 48)  50..(50 + 48)
-// The second line means that the source range starts at 50 and contains 48 values: 50, 51, ..., 96, 97.
-// This corresponds to a destination range starting at 52 and also containing 48 values: 52, 53, ..., 98, 99.
-// So, seed number 53 corresponds to soil number 55.
-
-// Any source numbers that aren't mapped correspond to the same destination number.
-// So, seed number 10 corresponds to soil number 10.
-
-// seed  soil
-// 0     0
-// 1     1
-// ...   ...
-// 48    48
-// 49    49
-// 50    52
-// 51    53
-// ...   ...
-// 96    98
-// 97    99
-// 98    50
-// 99    51
-
-// With this map, you can look up the soil number required for each initial seed number:
-
-// Seed number 79 corresponds to soil number 81.
-// Seed number 14 corresponds to soil number 14.
-// Seed number 55 corresponds to soil number 57.
-// Seed number 13 corresponds to soil number 13.
 
 #[cfg(test)]
 mod tests {
@@ -144,7 +116,6 @@ humidity-to-location map:
 60 56 37
 56 93 4"
             .into();
-        let todo: Vec<u32> = vec![81, 14, 57, 13];
-        assert_eq!(run(&input), todo);
+        assert_eq!(run(&input), 35);
     }
 }
