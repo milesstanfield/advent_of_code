@@ -4,12 +4,9 @@ struct Race {
 }
 
 pub fn run(_: &String) -> usize {
-    let mut mult = 1;
-
-    mult = mult * winning_holds(race()).len();
-
-    println!("{:?}", mult);
-    mult
+    let answer = winning_holds(race()).len();
+    println!("{:?}", answer);
+    answer
 }
 
 fn winning_holds(race: Race) -> Vec<i32> {
