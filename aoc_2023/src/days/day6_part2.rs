@@ -1,38 +1,35 @@
 struct Race {
-    time: usize,
-    dist: usize,
+    time: i32,
+    dist: i32,
 }
 
 pub fn run(_: &String) -> usize {
-    let races = vec![Race {
-        time: 60808676,
-        dist: 601116315591300,
-    }];
-    let mut winning_holds: Vec<usize>;
-    let mut moved: usize;
-    let mut ways_to_win: Vec<usize> = vec![];
-
-    for race in races {
-        moved = 0;
-        winning_holds = vec![];
-
-        for hold in 1..race.time {
-            moved = hold * (race.time - hold);
-            if moved > race.dist {
-                winning_holds.push(hold);
-            }
-        }
-
-        ways_to_win.push(winning_holds.len() as usize);
-    }
-
     let mut mult = 1;
-    for way_to_win in ways_to_win {
-        mult = mult * way_to_win;
-    }
-    println!("{:?}", mult);
 
+    mult = mult * winning_holds(race()).len();
+
+    println!("{:?}", mult);
     mult
+}
+
+fn winning_holds(race: Race) -> Vec<i32> {
+    let mut holds: Vec<i32> = vec![];
+    let mut _moved: i32 = 0;
+
+    for hold in 1..race.time {
+        _moved = hold * (race.time - hold);
+        if _moved > race.dist {
+            holds.push(hold);
+        }
+    }
+
+    holds
+}
+
+fn race() -> Race {
+    let time = 71530;
+    let dist = 940200;
+    Race { time, dist }
 }
 
 #[cfg(test)]

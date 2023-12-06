@@ -3,40 +3,40 @@ struct Race {
     dist: i32,
 }
 
-pub fn run(input: &String) -> usize {
-    let races = vec![
+pub fn run(_: &String) -> usize {
+    let mut mult = 1;
+
+    for race in races() {
+        mult = mult * winning_holds(race).len();
+    }
+
+    println!("{:?}", mult);
+    mult
+}
+
+fn winning_holds(race: Race) -> Vec<i32> {
+    let mut holds: Vec<i32> = vec![];
+    let mut _moved: i32 = 0;
+
+    for hold in 1..race.time {
+        _moved = hold * (race.time - hold);
+        if _moved > race.dist {
+            holds.push(hold);
+        }
+    }
+
+    holds
+}
+
+fn races() -> Vec<Race> {
+    vec![
         Race { time: 7, dist: 9 },
         Race { time: 15, dist: 40 },
         Race {
             time: 30,
             dist: 200,
         },
-    ];
-    let mut winning_holds: Vec<i32>;
-    let mut moved: i32;
-    let mut ways_to_win: Vec<i32> = vec![];
-
-    for race in races {
-        moved = 0;
-        winning_holds = vec![];
-
-        for hold in 1..race.time {
-            moved = hold * (race.time - hold);
-            if moved > race.dist {
-                winning_holds.push(hold);
-            }
-        }
-
-        ways_to_win.push(winning_holds.len() as i32);
-    }
-
-    let mut mult = 0;
-    for way_to_win in ways_to_win {
-        mult = mult * way_to_win;
-    }
-    println!("{:?}", mult);
-
-    0
+    ]
 }
 
 #[cfg(test)]
@@ -45,6 +45,6 @@ mod tests {
 
     #[test]
     fn it_works() {
-        assert_eq!(run(&input), 288);
+        assert_eq!(run(&"".to_string()), 288);
     }
 }
