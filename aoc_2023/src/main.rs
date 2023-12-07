@@ -1,4 +1,4 @@
-use days::day5_part2::run;
+use days::day7_part1::run;
 use shell::{dir::manifest_dir, file::cat_file};
 
 pub mod days;
