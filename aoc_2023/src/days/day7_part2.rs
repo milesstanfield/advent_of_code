@@ -90,7 +90,7 @@ impl Hand {
     fn hand_type(cards: &Vec<char>) -> HandType {
         let (wild_count, map) = Self::card_counts(cards);
         let counts: Vec<&usize> = map.values().collect();
-        let pairs: Vec<&usize> = counts.clone().into_iter().filter(|c| c == &&2).collect();
+        let pairs: Vec<&&usize> = counts.iter().filter(|c| c == &&&2).collect();
 
         if wild_count == 0 {
             if counts.contains(&&5) {
