@@ -88,39 +88,85 @@ impl From<&str> for Hand {
 
 impl Hand {
     fn hand_type(cards: &Vec<char>) -> HandType {
-        let map = Self::card_counts_map(cards);
+        let (wild_count, map) = Self::card_counts(cards);
         let counts: Vec<&usize> = map.values().collect();
+        let pairs: Vec<&usize> = counts.clone().into_iter().filter(|c| c == &&2).collect();
 
-        if counts.contains(&&5) {
-            HandType::FIVE
-        } else if counts.contains(&&4) {
-            HandType::FOUR
-        } else if counts.contains(&&3) && counts.contains(&&2) {
-            HandType::FULL
-        } else if counts.contains(&&3) {
-            HandType::THREE
-        } else {
-            let pairs: Vec<&usize> = counts.into_iter().filter(|c| c == &&2).collect();
-            if pairs.len() == 2 {
-                HandType::TWOP
-            } else if pairs.len() == 1 {
-                HandType::ONEP
+        if wild_count == 0 {
+            if counts.contains(&&5) {
+                HandType::FIVE
+            } else if counts.contains(&&4) {
+                HandType::FOUR
+            } else if counts.contains(&&3) && counts.contains(&&2) {
+                HandType::FULL
+            } else if counts.contains(&&3) {
+                HandType::THREE
             } else {
-                HandType::HIGH
+                if pairs.len() == 2 {
+                    HandType::TWOP
+                } else if pairs.len() == 1 {
+                    HandType::ONEP
+                } else {
+                    HandType::HIGH
+                }
+            }
+        } else {
+            match wild_count {
+                1 => {
+                    if counts.contains(&&4) {
+                        HandType::FIVE
+                    } else if counts.contains(&&3) {
+                        HandType::FOUR
+                    } else if pairs.len() == 2 {
+                        HandType::FULL
+                    } else if counts.contains(&&2) {
+                        HandType::THREE
+                    } else {
+                        if pairs.len() == 1 {
+                            HandType::TWOP
+                        } else {
+                            HandType::ONEP
+                        }
+                    }
+                }
+                2 => {
+                    if counts.contains(&&3) {
+                        HandType::FIVE
+                    } else if counts.contains(&&2) {
+                        HandType::FOUR
+                    } else if pairs.len() == 1 {
+                        HandType::FULL
+                    } else {
+                        HandType::THREE
+                    }
+                }
+                3 => {
+                    if counts.contains(&&2) {
+                        HandType::FIVE
+                    } else {
+                        HandType::FOUR
+                    }
+                }
+                _ => HandType::FIVE,
             }
         }
     }
 
-    fn card_counts_map(cards: &Vec<char>) -> HashMap<char, usize> {
+    fn card_counts(cards: &Vec<char>) -> (i32, HashMap<char, usize>) {
         let mut map: HashMap<char, usize> = HashMap::new();
+        let mut wild_count: i32 = 0;
+
         for card in cards {
-            if let Some(val) = map.get(card) {
+            if card == &'J' {
+                wild_count += 1;
+            } else if let Some(val) = map.get(card) {
                 map.insert(*card, val + 1);
             } else {
                 map.insert(*card, 1);
             }
         }
-        map
+
+        (wild_count, map)
     }
 }
 
