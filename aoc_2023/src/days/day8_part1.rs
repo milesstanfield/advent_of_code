@@ -1,49 +1,89 @@
-struct Input {
-    nodes: Vec<Node>,
-    instructions: Vec<char>,
+use std::collections::HashMap;
+
+use regex::Regex;
+
+struct Nodes {
+    map: HashMap<String, Node>,
 }
 
+impl Nodes {
+    fn from(lines: Vec<&str>) -> Self {
+        let mut map = HashMap::new();
+        for line in lines.into_iter().skip(2) {
+            let (name, tuple) = Node::parse(line);
+            map.insert(name, tuple);
+        }
+        Nodes { map }
+    }
+}
+
+#[derive(Debug)]
 struct Node {
     name: String,
     left: String,
     right: String,
 }
 
-impl From<Vec<&str>> for Node {
-    fn from(lines: Vec<&str>) -> Self {
-        // Node { name: (), left: (), right: () }
-    }
-}
-
-impl From<&String> for Input {
-    fn from(input: &String) -> Self {
-        let lines: Vec<&str> = input.lines().collect();
-        let instructions_line = lines.first().unwrap_or(&"".into());
-        let instructions = instructions_line.chars().collect();
-
-        // let lines = input.lines();
-        // let instructions_line = lines.into_iter().first().unwrap_or(&"".into());
-        // let nodes: Vec<&str> = lines.skip(2).collect();
-
-        // Input {
-        //     nodes,
-        //     instructions: instructions_line.chars().collect(),
-        // }
-
-        Input {
-            nodes: (),
-            instructions,
+impl Node {
+    fn new(name: &str, left: &str, right: &str) -> Self {
+        Node {
+            name: name.into(),
+            left: left.into(),
+            right: right.into(),
         }
     }
+
+    fn parse(line: &str) -> (String, Node) {
+        let re = Regex::new(r"(\w+) = \((\w+), (\w+)\)").unwrap();
+        let (_, [name, left, right]) = re.captures(line).unwrap().extract();
+        (name.into(), Node::new(name, left, right))
+    }
 }
 
-pub fn run(input: &String) -> usize {
-    let mut sum: usize = 0;
-    for line in Input::from(input).lines {
-        println!("line {:?}", line);
+struct Input;
+impl Input {
+    fn parse(input: &String) -> (Vec<char>, Nodes) {
+        let lines: Vec<&str> = input.lines().collect();
+        let instructions = lines.first().unwrap_or(&"".into()).chars().collect();
+        let nodes = Nodes::from(lines);
+        (instructions, nodes)
+    }
+}
+
+fn traverse<'a>(
+    mut node_name: &'a str,
+    mut sum: i32,
+    instructions: &Vec<char>,
+    nodes: &'a Nodes,
+) -> Option<i32> {
+    for instruction in instructions {
+        let node = nodes.map.get(node_name).unwrap();
+
+        node_name = match instruction {
+            'L' => &node.left,
+            _ => &node.right,
+        };
+
+        sum += 1;
+
+        if node_name == "ZZZ" {
+            break;
+        }
     }
 
-    dbg!(sum)
+    if node_name != "ZZZ" {
+        traverse(node_name, sum, instructions, nodes)
+    } else {
+        Some(sum)
+    }
+}
+
+pub fn run(input: &String) -> i32 {
+    let (instructions, nodes) = Input::parse(input);
+    match traverse(&mut "AAA", 0, &instructions, &nodes) {
+        Some(sum) => dbg!(sum),
+        None => 0,
+    }
 }
 
 #[cfg(test)]
