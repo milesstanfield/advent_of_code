@@ -53,7 +53,7 @@ fn traverse<'a>(
     mut sum: i32,
     instructions: &Vec<char>,
     nodes: &'a Nodes,
-) -> Option<i32> {
+) -> i32 {
     for instruction in instructions {
         let node = nodes.map.get(node_name).unwrap();
 
@@ -72,16 +72,13 @@ fn traverse<'a>(
     if node_name != "ZZZ" {
         traverse(node_name, sum, instructions, nodes)
     } else {
-        Some(sum)
+        sum
     }
 }
 
 pub fn run(input: &String) -> i32 {
     let (instructions, nodes) = Input::parse(input);
-    match traverse(&mut "AAA", 0, &instructions, &nodes) {
-        Some(sum) => dbg!(sum),
-        None => 0,
-    }
+    dbg!(traverse(&mut "AAA", 0, &instructions, &nodes))
 }
 
 #[cfg(test)]
