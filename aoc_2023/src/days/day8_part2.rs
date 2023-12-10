@@ -48,37 +48,51 @@ impl Input {
     }
 }
 
+fn next_name(name: String, instruction: &char, nodes: &Nodes) -> String {
+    match instruction {
+        'L' => nodes.map.get(name.as_str()).unwrap().left.clone(),
+        'R' => nodes.map.get(name.as_str()).unwrap().right.clone(),
+        _ => panic!("huh?"),
+    }
+}
+
 fn traverse<'a>(
-    mut node_name: &'a str,
+    mut node_names: Vec<String>,
     mut sum: i32,
     instructions: &Vec<char>,
-    nodes: &'a Nodes,
+    nodes: &Nodes,
 ) -> i32 {
     for instruction in instructions {
-        let node = nodes.map.get(node_name).unwrap();
-
-        node_name = match instruction {
-            'L' => &node.left,
-            _ => &node.right,
-        };
+        node_names = node_names
+            .into_iter()
+            .map(|name| next_name(name, instruction, nodes))
+            .collect();
 
         sum += 1;
 
-        if node_name == "ZZZ" {
+        if node_names.clone().into_iter().all(|n| n.ends_with('Z')) {
             break;
         }
     }
 
-    if node_name != "ZZZ" {
-        traverse(node_name, sum, instructions, nodes)
-    } else {
+    if node_names.clone().into_iter().all(|n| n.ends_with('Z')) {
         sum
+    } else {
+        traverse(node_names, sum, instructions, nodes)
     }
 }
 
 pub fn run(input: &String) -> i32 {
     let (instructions, nodes) = Input::parse(input);
-    dbg!(traverse(&mut "AAA", 0, &instructions, &nodes))
+
+    let node_names: Vec<String> = nodes
+        .map
+        .keys()
+        .filter(|k| k.ends_with('A'))
+        .map(|k| k.to_string())
+        .collect();
+
+    dbg!(traverse(node_names, 0, &instructions, &nodes))
 }
 
 #[cfg(test)]
@@ -88,11 +102,16 @@ mod tests {
     #[test]
     fn it_works() {
         let input: String = "\
-LLR
+LR
 
-AAA = (BBB, BBB)
-BBB = (AAA, ZZZ)
-ZZZ = (ZZZ, ZZZ)"
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)"
             .into();
         assert_eq!(run(&input), 6);
     }
