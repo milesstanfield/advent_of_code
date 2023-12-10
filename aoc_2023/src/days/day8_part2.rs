@@ -48,51 +48,48 @@ impl Input {
     }
 }
 
-fn next_name(name: String, instruction: &char, nodes: &Nodes) -> String {
-    match instruction {
-        'L' => nodes.map.get(name.as_str()).unwrap().left.clone(),
-        'R' => nodes.map.get(name.as_str()).unwrap().right.clone(),
-        _ => panic!("huh?"),
-    }
-}
-
 fn traverse<'a>(
-    mut node_names: Vec<String>,
-    mut sum: i32,
+    mut node_name: &'a str,
+    mut sum: usize,
     instructions: &Vec<char>,
-    nodes: &Nodes,
-) -> i32 {
+    nodes: &'a Nodes,
+) -> usize {
     for instruction in instructions {
-        node_names = node_names
-            .into_iter()
-            .map(|name| next_name(name, instruction, nodes))
-            .collect();
-
         sum += 1;
 
-        if node_names.clone().into_iter().all(|n| n.ends_with('Z')) {
+        let node = nodes.map.get(node_name).unwrap();
+
+        node_name = match instruction {
+            'L' => &node.left,
+            _ => &node.right,
+        };
+
+        if node_name.ends_with('Z') {
             break;
         }
     }
 
-    if node_names.clone().into_iter().all(|n| n.ends_with('Z')) {
+    if node_name.ends_with('Z') {
         sum
     } else {
-        traverse(node_names, sum, instructions, nodes)
+        traverse(node_name, sum, instructions, nodes)
     }
 }
 
-pub fn run(input: &String) -> i32 {
+pub fn run(input: &String) -> usize {
     let (instructions, nodes) = Input::parse(input);
 
-    let node_names: Vec<String> = nodes
-        .map
-        .keys()
-        .filter(|k| k.ends_with('A'))
-        .map(|k| k.to_string())
-        .collect();
+    let mut sums: Vec<usize> = vec![];
+    for node_name in nodes.map.keys().filter(|k| k.ends_with('A')) {
+        sums.push(traverse(node_name, 0, &instructions, &nodes));
+    }
 
-    dbg!(traverse(node_names, 0, &instructions, &nodes))
+    let lcm = sums
+        .into_iter()
+        .reduce(|a, b| num::integer::lcm(b, a))
+        .unwrap();
+
+    dbg!(lcm)
 }
 
 #[cfg(test)]
