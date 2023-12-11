@@ -1,71 +1,27 @@
-struct StepVecs;
-impl StepVecs {
-    fn parse(values: Vec<i64>, mut vecs: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
-        let mut vec: Vec<i64> = vec![];
+fn extrapolate(line: &str) -> i32 {
+    let history: Vec<i32> = line.split(" ").map(|x| x.parse::<i32>().unwrap()).collect();
+    let mut sum: i32 = *history.last().unwrap();
+    let mut sequences: Vec<i32> = history.windows(2).map(|pair| pair[1] - pair[0]).collect();
+    sum += sequences.last().unwrap();
 
-        for i in 0..values.len() {
-            if i != 0 {
-                vec.push(values[i - 1].abs_diff(values[i]) as i64);
-            }
-        }
-
-        vecs.push(vec.clone());
-
-        if vecs.last().unwrap().into_iter().all(|n| n == &0) {
-            vecs
+    loop {
+        sequences = sequences.windows(2).map(|pair| pair[1] - pair[0]).collect();
+        if sequences.iter().all(|seq| *seq == 0) {
+            return sum;
         } else {
-            Self::parse(vec, vecs)
+            sum += sequences.last().unwrap();
         }
     }
 }
 
-struct History {
-    values: Vec<i64>,
-}
+pub fn run(input: &String) -> i32 {
+    let mut total: i32 = 0;
 
-impl History {
-    fn next_value(&self) -> i64 {
-        let values = self.values.clone();
-        let step_vecs = StepVecs::parse(values.clone(), vec![self.values.clone()]);
-
-        let mut val: i64 = 0;
-        for step_vec in step_vecs.into_iter().filter(|x| !x.is_empty()) {
-            val += step_vec.last().unwrap();
-        }
-
-        println!("next val for values {:?} is val {:?}", values, val);
-
-        val
+    for line in input.lines() {
+        total += extrapolate(line);
     }
-}
 
-impl From<&str> for History {
-    fn from(line: &str) -> Self {
-        let values: Vec<i64> = line
-            .split(" ")
-            .map(|value| value.parse::<i64>().unwrap())
-            .collect();
-        History { values }
-    }
-}
-
-struct Histories;
-impl Histories {
-    fn parse(input: &String) -> Vec<History> {
-        input
-            .lines()
-            .into_iter()
-            .map(|line| History::from(line))
-            .collect()
-    }
-}
-
-pub fn run(input: &String) -> i64 {
-    let mut sum: i64 = 0;
-    for history in Histories::parse(input) {
-        sum += history.next_value();
-    }
-    dbg!(sum)
+    dbg!(total)
 }
 
 #[cfg(test)]
