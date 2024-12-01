@@ -17,6 +17,6 @@ module Aoc
       line.split
     end
 
-    Day.new(rows).run
+    puts Day.new(rows).run
   end
 end

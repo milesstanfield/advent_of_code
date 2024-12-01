@@ -10,7 +10,7 @@ module Aoc
         score += (col1_entry * appearances)
       end
 
-      puts score
+      score
     end
   end
 end
