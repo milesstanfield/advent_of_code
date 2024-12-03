@@ -2,10 +2,11 @@ require "pry"
 
 module Aoc
   class DayBase
-    attr_reader :rows
+    attr_reader :rows, :raw
 
-    def initialize(rows)
+    def initialize(rows, raw)
       @rows = rows # [["1", "2"], ["3", "4"], ["5", "6"]]
+      @raw = raw
     end
 
     # [[1, 2], [3, 4], [5, 6]]
@@ -36,10 +37,13 @@ module Aoc
     last_file_name = Dir["#{File.dirname(__FILE__)}/days/*.rb"].last.split("/").last
     require_relative "days/#{last_file_name}"
 
+    raw = File.read(File.dirname(__FILE__) + "/data")
+
+    # todo miles
     rows = File.readlines(File.dirname(__FILE__) + "/data", chomp: true).map do |line|
       line.split
     end
 
-    puts Day.new(rows).run
+    puts Day.new(rows, raw).run
   end
 end
