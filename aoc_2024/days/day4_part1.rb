@@ -73,27 +73,3 @@ module Aoc
     end
   end
 end
-
-#   0123456789
-# 0 ....XXMAS.
-# 1 .SAMXMS...
-# 2 ...S..A...
-# 3 ..A.A.MS.X
-# 4 XMASAMX.MM
-# 5 X.....XA.A
-# 6 S.S.S.S.SS
-# 7 .A.A.A.A.A
-# 8 ..M.M.M.MM
-# 9 .X.X.XMASX
-
-#   0123456789
-# 0 MMMSXXMASM
-# 1 MSAMXMSMSA
-# 2 AMXSXMAAMM
-# 3 MSAMASMSMX
-# 4 XMASAMXAMM
-# 5 XXAMMXXAMA
-# 6 SMSMSASXSS
-# 7 SAXAMASAAA
-# 8 MAMMMXMMMM
-# 9 MXMXAXMASX
