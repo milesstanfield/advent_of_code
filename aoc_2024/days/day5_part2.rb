@@ -20,24 +20,23 @@ module Aoc
     end
 
     def ordered_update(update)
-      @mod_update = update
-
       rules.each do |rule|
-        @mod_update.each do |num|
+        update.each do |num|
           rule1_index = update.index(rule[0])
           rule2_index = update.index(rule[1])
 
-          if [rule1_index, rule2_index].all? && rule2_index < rule1_index
-            rule2_val = @mod_update[rule2_index]
-            rule1_val = @mod_update[rule1_index]
-            @mod_update[rule1_index] = rule2_val
-            @mod_update[rule2_index] = rule1_val
-            ordered_update(@mod_update)
+          if [rule1_index, rule2_index].all? && rule1_index > rule2_index
+            rule2_val = update[rule2_index]
+            rule1_val = update[rule1_index]
+            @ordered_update = update
+            @ordered_update[rule1_index] = rule2_val
+            @ordered_update[rule2_index] = rule1_val
+            ordered_update(@ordered_update)
           end
         end
       end
 
-      @mod_update
+      update
     end
 
     def invalid_updates
