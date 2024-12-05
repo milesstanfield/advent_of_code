@@ -7,13 +7,17 @@ module Aoc
       @rules = to_rows(sections[0]).map { |row| row.first.split("|").map(&:to_i) }
       @updates = to_rows(sections[1]).map { |row| row.first.split(",").map(&:to_i) }
 
-      valid_updates.map do |update|
-        index = (update.size / 2).to_i
-        update[index]
-      end.sum
+      middle_numbers(valid_updates).sum
     end
 
     private
+
+    def middle_numbers(updates)
+      updates.map do |update|
+        index = (update.size / 2).to_i
+        update[index]
+      end
+    end
 
     def valid_updates
       @valid_updates ||= updates.select do |update|
