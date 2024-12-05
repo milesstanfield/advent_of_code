@@ -6,7 +6,11 @@ module Aoc
 
     def initialize(raw)
       @raw = raw # "1   2\n3   4\n5   6"
-      @rows = raw.split(/\n/).map(&:split) # [["1", "2"], ["3", "4"], ["5", "6"]]
+      @rows = to_rows(raw) # [["1", "2"], ["3", "4"], ["5", "6"]]
+    end
+
+    def to_rows(input)
+      input.split(/\n/).map(&:split)
     end
 
     # [[1, 2], [3, 4], [5, 6]]
