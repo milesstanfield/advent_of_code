@@ -13,6 +13,10 @@ module Aoc
       input.split(/\n/).map(&:split)
     end
 
+    def char_split_rows
+      @char_rows ||= rows.map { |row| row.first.each_char.to_a }
+    end
+
     # [[1, 2], [3, 4], [5, 6]]
     def irows
       @irows ||= rows.map { |row| row.map(&:to_i) }
