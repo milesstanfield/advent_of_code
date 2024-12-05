@@ -4,9 +4,9 @@ module Aoc
   class DayBase
     attr_reader :rows, :raw
 
-    def initialize(rows, raw)
-      @rows = rows # [["1", "2"], ["3", "4"], ["5", "6"]]
-      @raw = raw
+    def initialize(raw)
+      @raw = raw # "1   2\n3   4\n5   6"
+      @rows = raw.split(/\n/).map(&:split) # [["1", "2"], ["3", "4"], ["5", "6"]]
     end
 
     # [[1, 2], [3, 4], [5, 6]]
@@ -33,17 +33,10 @@ module Aoc
     end
   end
 
-  def self.run_latest
-    last_file_name = Dir["#{File.dirname(__FILE__)}/days/*.rb"].last.split("/").last
-    require_relative "days/#{last_file_name}"
-
+  def self.run(filename)
+    filename ||= Dir["#{File.dirname(__FILE__)}/days/*.rb"].last.split("/").last
+    require_relative "days/#{filename}"
     raw = File.read(File.dirname(__FILE__) + "/data")
-
-    # todo miles
-    rows = File.readlines(File.dirname(__FILE__) + "/data", chomp: true).map do |line|
-      line.split
-    end
-
-    puts Day.new(rows, raw).run
+    puts Day.new(raw).run
   end
 end
