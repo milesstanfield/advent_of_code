@@ -6,7 +6,6 @@ module Aoc
       sections = raw.split(/\n\n/)
       @rules = to_rows(sections[0]).map { |row| row.first.split("|").map(&:to_i) }
       @updates = to_rows(sections[1]).map { |row| row.first.split(",").map(&:to_i) }
-
       middle_numbers(valid_updates).sum
     end
 
@@ -20,7 +19,7 @@ module Aoc
     end
 
     def valid_updates
-      @valid_updates ||= updates.select do |update|
+      updates.select do |update|
         rules.all? do |rule|
           next(true) if update.index(rule[0]).nil? || update.index(rule[1]).nil?
           update.index(rule[0]) < update.index(rule[1])
