@@ -89,11 +89,24 @@ module Aoc
     end
 
     def existing_pos_this_direction?(row_i:, col_i:, char:)
-      case char
-      when "^"
-        rows[row_i - 1][col_i]
+      i = 0
+      while true
+        i += 1
+
+        case char
+        when "^"
+          if (row_i - i) >= 0
+            next_char = rows[row_i - i][col_i] rescue nil
+            if next_char != "#" && @positions.index({row: row_i - i, col: col_i, char: next_char})
+              break true
+            end
+          end
+        end
+
+        break false
       end
-      # @positions.index({row: row_i - 1, col: col_i, char: "^"})
+
+      #
     end
 
     def guard?(char)
